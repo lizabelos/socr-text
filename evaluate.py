@@ -52,7 +52,7 @@ def main():
     else:
         raise FileNotFoundError()
 
-    data_set = FileDataset()
+    data_set = FileDataset(model.get_input_image_height())
     for path in args.paths:
         data_set.recursive_list(path)
     data_set.sort()

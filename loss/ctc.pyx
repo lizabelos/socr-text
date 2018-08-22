@@ -3,7 +3,7 @@ np.seterr(divide='raise',invalid='raise')
 import torch
 
 from utils.logger import print_normal, print_warning, print_error
-from codecs.ctc_decoder import CTCDecoder
+from coder.ctc_decoder import CTCDecoder
 from modules.ctc import CTCFunction
 
 cpdef text_to_label(dict labels, str text):
@@ -84,14 +84,3 @@ class CTC(torch.nn.Module):
 
     def ytrue_to_lines(self, sequence):
         return self.decoder.decode(sequence)
-
-    def collate(self, batch):
-        data = [item[0] for item in batch]
-        max_width = max([d.size()[2] for d in data])
-
-        data = [torch.nn.functional.pad(d, (0, max_width - d.size()[2], 0, 0)) for d in data]
-        data = torch.stack(data)
-
-        target = [item[1] for item in batch]
-
-        return [data, target]

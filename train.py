@@ -21,10 +21,10 @@ def main():
     parser.add_argument('--overlr', action='store_const', const=True, default=False)
     parser.add_argument('--disablecuda', action='store_const', const=True, default=False)
     parser.add_argument('--iamtrain', type=str)
-    parser.add_argument('--iamtest', type=str)
+    parser.add_argument('--iamtest', type=str, default=None)
     args = parser.parse_args()
 
-    with open("resources/characters.txt", "r") as content_file:
+    with open("characters.txt", "r") as content_file:
         lst = content_file.read() + " "
 
     labels = {"": 0}
@@ -74,7 +74,9 @@ def main():
             param_group['lr'] = args.lr
 
     train_database = IAMHandwritingLineDatabase(args.iamtrain, height=model.get_input_image_height(), loss=loss)
-    test_database = IAMHandwritingLineDatabase(args.iamtest, height=model.get_input_image_height(), loss=loss)
+    test_database = None
+    if args.iamtest is not None:
+        test_database = IAMHandwritingLineDatabase(args.iamtest, height=model.get_input_image_height(), loss=loss)
 
     moving_average = MovingAverage(max(train_database.__len__() // args.bs, 1024))
 
@@ -125,7 +127,9 @@ def main():
             adaptative_optimizer.step()
 
             sys.stdout.write("\n")
-            test(model, loss, test_database)
+
+            if args.iamtest is not None:
+                test(model, loss, test_database)
 
     except KeyboardInterrupt:
         pass
@@ -204,6 +208,18 @@ def test(model, loss, test_database, limit=32):
     ser = (100.0 * sen_err) / count
 
     print_normal("CER : %.3f; WER : %.3f; SER : %.3f \n" % (cer, wer, ser))
+
+
+def collate(batch):
+    data = [item[0] for item in batch]
+    max_width = max([d.size()[2] for d in data])
+
+    data = [torch.nn.functional.pad(d, (0, max_width - d.size()[2], 0, 0)) for d in data]
+    data = torch.stack(data)
+
+    target = [item[1] for item in batch]
+
+    return [data, target]
 
 
 if __name__ == '__main__':
