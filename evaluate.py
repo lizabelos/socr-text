@@ -19,7 +19,7 @@ def main():
     parser.add_argument('--disablecuda', action='store_const', const=True, default=False)
     args = parser.parse_args()
 
-    with open("resources/characters.txt", "r") as content_file:
+    with open("characters.txt", "r") as content_file:
         lst = content_file.read() + " "
 
     labels = {"": 0}
