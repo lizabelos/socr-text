@@ -68,6 +68,11 @@ def main():
     else:
         print_warning("Can't find '" + checkpoint_name + "'")
 
+    if args.overlr is not None:
+        print_normal("Overwriting the lr to " + str(args.lr))
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = args.lr
+
     train_database = IAMHandwritingLineDatabase(args.iamtrain, height=model.get_input_image_height(), loss=loss)
     test_database = IAMHandwritingLineDatabase(args.iamtest, height=model.get_input_image_height(), loss=loss)
 
@@ -199,7 +204,7 @@ def test(model, loss, test_database, limit=32):
     ser = (100.0 * sen_err) / count
 
     print_normal("CER : %.3f; WER : %.3f; SER : %.3f \n" % (cer, wer, ser))
-    
+
 
 if __name__ == '__main__':
     main()
