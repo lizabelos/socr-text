@@ -37,6 +37,8 @@ def main():
         model = model.cpu()
         loss = loss.cpu()
 
+    image_height = model.get_input_image_height()
+
     if not args.disablecuda:
         print_normal("Using GPU Data Parallel")
         model = torch.nn.DataParallel(model)
@@ -52,7 +54,7 @@ def main():
     else:
         raise FileNotFoundError()
 
-    data_set = FileDataset(model.get_input_image_height())
+    data_set = FileDataset(image_height)
     for path in args.paths:
         data_set.recursive_list(path)
     data_set.sort()

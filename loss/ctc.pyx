@@ -59,7 +59,7 @@ class CTC(torch.nn.Module):
         self.decoder = CTCDecoder(self.inv_labels, self.label_len)
 
     def forward(self, output, label):
-        return self.ctc.apply(output, label, self.labels[""], self.is_gpu, self.width_transform, False)
+        return self.ctc.apply(output, label, self.labels[""], self.is_gpu, self.width_transform)
 
     def cuda(self, **kwargs):
         self.is_gpu = True

@@ -175,4 +175,4 @@ class CTCFunction(torch.autograd.Function):
         if torch.isnan(gradient).any():
             raise FloatingPointError()
 
-        return gradient * grad_output.view(-1, 1, 1), None, None, None, None, None
+        return gradient * grad_output.view(-1, 1, 1), None, None, None, None

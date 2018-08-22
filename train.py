@@ -18,11 +18,14 @@ def main():
     parser.add_argument('--name', type=str, default="resRnn")
     parser.add_argument('--lr', type=float, default=0.0001, help="Learning rate")
     parser.add_argument('--clipgradient', type=float, default=None)
+    parser.add_argument('--epochlimit', type=int, default=None)
     parser.add_argument('--overlr', action='store_const', const=True, default=False)
     parser.add_argument('--disablecuda', action='store_const', const=True, default=False)
     parser.add_argument('--iamtrain', type=str)
     parser.add_argument('--iamtest', type=str, default=None)
     args = parser.parse_args()
+
+    assert args.iamtrain is not None
 
     with open("characters.txt", "r") as content_file:
         lst = content_file.read() + " "
@@ -41,6 +44,8 @@ def main():
         print_warning("Using the CPU")
         model = model.cpu()
         loss = loss.cpu()
+
+    image_height = model.get_input_image_height()
 
     print_normal("Using Adam with a Learning Rate of " + str(args.lr))
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
@@ -73,10 +78,10 @@ def main():
         for param_group in optimizer.param_groups:
             param_group['lr'] = args.lr
 
-    train_database = IAMHandwritingLineDatabase(args.iamtrain, height=model.get_input_image_height(), loss=loss)
+    train_database = IAMHandwritingLineDatabase(args.iamtrain, height=image_height, loss=loss)
     test_database = None
     if args.iamtest is not None:
-        test_database = IAMHandwritingLineDatabase(args.iamtest, height=model.get_input_image_height(), loss=loss)
+        test_database = IAMHandwritingLineDatabase(args.iamtest, height=image_height, loss=loss)
 
     moving_average = MovingAverage(max(train_database.__len__() // args.bs, 1024))
 
@@ -96,14 +101,11 @@ def main():
                 optimizer.zero_grad()
 
                 variable = torch.autograd.Variable(inputs).float()
-                labels = torch.autograd.Variable(labels).float()
 
                 if not args.disablecuda:
                     variable = variable.cuda()
-                    labels = labels.cuda()
                 else:
                     variable = variable.cpu()
-                    labels = labels.cpu()
 
                 outputs = model(variable)
                 loss_value = loss.forward(outputs, labels)
