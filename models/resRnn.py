@@ -81,7 +81,3 @@ class resRnn(torch.nn.Module):
 
     def conv_output_size(self, width, filter_size, padding, stride):
         return (width - filter_size + 2 * padding) / stride + 1
-
-    def adaptative_learning_rate(self, optimizer):
-        return torch.optim.lr_scheduler.ExponentialLR(optimizer, 0.98)
-        # return torch.optim.lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)

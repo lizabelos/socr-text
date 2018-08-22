@@ -11,7 +11,6 @@ extensions = [
     Extension("coder.language.prefix_tree", ["coder/language/prefix_tree.pyx"]),
     Extension("coder.language.language_model", ["coder/language/language_model.pyx"]),
     Extension("coder.language.word_beam_search", ["coder/language/word_beam_search.pyx"]),
-    Extension("coder.language.ngram", ["coder/language/ngram.pyx"]),
     Extension("loss.ctc", ["loss/ctc.pyx"]),
     Extension("modules.ctc", ["modules/ctc.pyx"]),
 ]
