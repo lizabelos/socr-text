@@ -9,6 +9,8 @@ from utils.logger import print_normal, print_warning, print_error, TerminalColor
 from utils.trainer import CPUParallel, MovingAverage
 from rating.word_error_rate import levenshtein
 from utils.dataset import FileDataset
+from coder.language.language_model import LanguageModel
+from coder.language.word_beam_search import wordBeamSearch
 
 
 def main():
@@ -20,7 +22,21 @@ def main():
     args = parser.parse_args()
 
     with open("characters.txt", "r") as content_file:
-        lst = content_file.read() + " "
+        characters = content_file.read() + " "
+        lst = characters
+        labels = {"": 0}
+        for i in range(0, len(lst)):
+            labels[lst[i]] = i + 1
+
+    with open("word_characters.txt", "r") as content_file:
+        word_characters = content_file.read()
+
+    with open("dictionnary.txt", "r") as content_file:
+        dictionnary = content_file.read()
+
+
+
+    lm = LanguageModel(dictionnary, characters, word_characters)
 
     labels = {"": 0}
     for i in range(0, len(lst)):
@@ -75,7 +91,7 @@ def main():
         else:
             result = model(torch.autograd.Variable(image.float().cpu()))
 
-        text = loss.ytrue_to_lines(result.cpu().detach().numpy())
+        text = wordBeamSearch(result[0].data.cpu().numpy(), 32, lm, False)
         print(text)
 
         count = count + 1

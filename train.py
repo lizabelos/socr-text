@@ -9,6 +9,8 @@ from utils.logger import print_normal, print_warning, print_error, TerminalColor
 from dataset.iam_handwriting_line_database import IAMHandwritingLineDatabase
 from utils.trainer import CPUParallel, MovingAverage
 from rating.word_error_rate import levenshtein
+from coder.language.language_model import LanguageModel
+from coder.language.word_beam_search import wordBeamSearch
 
 
 def main():
@@ -28,11 +30,19 @@ def main():
     assert args.iamtrain is not None
 
     with open("characters.txt", "r") as content_file:
-        lst = content_file.read() + " "
+        characters = content_file.read() + " "
+        lst = characters
+        labels = {"": 0}
+        for i in range(0, len(lst)):
+            labels[lst[i]] = i + 1
 
-    labels = {"": 0}
-    for i in range(0, len(lst)):
-        labels[lst[i]] = i + 1
+    with open("word_characters.txt", "r") as content_file:
+        word_characters = content_file.read()
+
+    with open("dictionnary.txt", "r") as content_file:
+        dictionnary = content_file.read()
+
+    lm = LanguageModel(dictionnary, characters, word_characters)
 
     model = resRnn(labels)
     loss = model.create_loss()
@@ -131,7 +141,7 @@ def main():
             sys.stdout.write("\n")
 
             if args.iamtest is not None:
-                test(model, loss, test_database)
+                test(model, lm, loss, test_database)
 
     except KeyboardInterrupt:
         pass
@@ -145,7 +155,7 @@ def main():
     }, checkpoint_name)
 
 
-def test(model, loss, test_database, limit=32):
+def test(model, lm, loss, test_database, limit=32):
     """
     Test the network
 
@@ -180,7 +190,8 @@ def test(model, loss, test_database, limit=32):
         else:
             result = model(torch.autograd.Variable(image.float().cpu()))
 
-        text = loss.ytrue_to_lines(result.cpu().detach().numpy())
+        # text = loss.ytrue_to_lines(result.cpu().detach().numpy())
+        text = wordBeamSearch(result[0].data.cpu().numpy(), 32, lm, False)
 
         # update CER statistics
         _, (s, i, d) = levenshtein(label, text)

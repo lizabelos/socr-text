@@ -7,15 +7,12 @@ from __future__ import division
 import re
 from .prefix_tree cimport PrefixTree
 
-from text_generator import TextGenerator
-
 
 cdef class LanguageModel:
     "unigram/bigram LM, add-k smoothing"
 
     def __init__(self, corpus, chars, wordChars):
         "read text from filename, specify chars which are contained in dataset, specify chars which form words"
-        self.nnGram = TextGenerator()
 
         # read from file
         self.wordCharPattern = '[' + wordChars + ']'
@@ -44,7 +41,7 @@ cdef class LanguageModel:
 
     cdef getNextWords(self, text):
         "text must be prefix of a word"
-        return self.tree.getNextWords(lower())
+        return self.tree.getNextWords(text.lower())
 
     cdef getNextChars(self, text):
         "text must be prefix of a word"
@@ -52,7 +49,7 @@ cdef class LanguageModel:
         if bool(re.match('^[0123456789]+$', text)):
             return "0123456789 "
 
-        nextChars = str().join(self.tree.getNextChars(lower()))
+        nextChars = str().join(self.tree.getNextChars(text.lower()))
 
 
         # need to make a get alpha chars with lower probability
@@ -68,7 +65,7 @@ cdef class LanguageModel:
 
         if bool(re.match('^[XVI]+$', text)):
             for c in "XVI ":
-                if find(c) < 0:
+                if text.find(c) < 0:
                     text += c
 
         return nextChars
@@ -93,9 +90,4 @@ cdef class LanguageModel:
 
     cdef getBigramProb(self, w1, w2):
         "prob of seeing words w1 w2 next to each other."
-        if w1 == self.lastW1 and w2 == self.lastW2:
-            return self.lastProb
-        self.lastW1 = w1
-        self.lastW2 = w2
-        self.lastProb = self.nnGram.get_bigram_prob(w1,w2)
-        return self.lastProb
+        raise NotImplementedError()
