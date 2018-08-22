@@ -180,7 +180,7 @@ def test(model, lm, loss, test_database, limit=32):
 
     for i, data in enumerate(loader, 0):
         image, label = data
-        label = label[1]
+        label = labels[0][1]
 
         if image.shape[2] < 8:
             continue
@@ -200,6 +200,7 @@ def test(model, lm, loss, test_database, limit=32):
         cer_d += d
         cer_n += len(label)
         # update WER statistics
+
         _, (s, i, d) = levenshtein(label.split(), text.split())
         wer_s += s
         wer_i += i
