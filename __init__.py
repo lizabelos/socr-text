@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from codecs.language.ngram import N2GramAnalyzer
+from coder.language.ngram import N2GramAnalyzer
 from rating.word_error_rate import levenshtein
 
 from dataset.document_generator_helper import DocumentGeneratorHelper

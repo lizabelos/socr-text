@@ -28,7 +28,8 @@ class resRnn(torch.nn.Module):
         ]))
         self.convolutions_output_size = self.get_cnn_output_size()
 
-        self.rnn = IndRNN(self.convolutions_output_size[1] * self.convolutions_output_size[2], self.rnn_size, n_layer=3, bidirectional=True, batch_norm=True, batch_first=True, dropout=0.2, nonlinearity='tanh')
+        # self.rnn = torch.nn.GRU(self.convolutions_output_size[1] * self.convolutions_output_size[2], self.rnn_size, num_layers=1, bidirectional=True)
+        self.rnn = IndRNN(self.convolutions_output_size[1] * self.convolutions_output_size[2], self.rnn_size, n_layer=3, bidirectional=True, batch_norm=True, batch_first=True, dropout=0.1, nonlinearity='relu')
         self.fc = torch.nn.Linear(2 * self.rnn_size, self.output_numbers)
 
         self.softmax = torch.nn.Softmax(dim=2)
