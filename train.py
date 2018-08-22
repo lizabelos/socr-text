@@ -180,7 +180,7 @@ def test(model, lm, loss, test_database, limit=32):
 
     for i, data in enumerate(loader, 0):
         image, label = data
-        label = labels[0][1]
+        label = label[0][1]
 
         if image.shape[2] < 8:
             continue
