@@ -47,10 +47,10 @@ If you want to enable test during the training, you have to split yourself the d
 1. Create a file ```my_custom_dataset.py``` in the dataset directory.
 2. This file must contains a class ```MyCustomDataset``` inheriting from ```torch.utils.data.dataset.Dataset```. You must implements the ```__getitem__``` and ```__len__``` function of this class.
 3. The ```__getitem__``` function must return ```image, (preprocessed_text, text, width)``` where : 
-3.1. ```image``` is the torch text image, resized to the input height of the model.
-3.2. ```preprocessed_text``` is the text preprocessed by ```loss.preprocess_label```
-3.3 ```text``` is the text of the image
-3.4 ```width``` is the width of the resized image
+    1. ```image``` is the torch text image, resized to the input height of the model.
+    2. ```preprocessed_text``` is the text preprocessed by ```loss.preprocess_label```
+    3 ```text``` is the text of the image
+    4 ```width``` is the width of the resized image
 
 
 ```python
