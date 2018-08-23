@@ -49,8 +49,8 @@ If you want to enable test during the training, you have to split yourself the d
 3. The ```__getitem__``` function must return ```image, (preprocessed_text, text, width)``` where : 
     1. ```image``` is the torch text image, resized to the input height of the model.
     2. ```preprocessed_text``` is the text preprocessed by ```loss.preprocess_label```
-    3 ```text``` is the text of the image
-    4 ```width``` is the width of the resized image
+    3. ```text``` is the text of the image
+    4. ```width``` is the width of the resized image
 
 
 ```python
