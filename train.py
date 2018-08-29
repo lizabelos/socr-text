@@ -14,6 +14,11 @@ from coder.language.word_beam_search import wordBeamSearch
 
 
 def main():
+    """
+    This is the main function, which is called first
+    """
+
+    # Parse the command line arguments
     parser = argparse.ArgumentParser(description="SOCR Text Recognizer")
     parser.add_argument('--bs', type=int, default=1)
     parser.add_argument('--model', type=str, default="resRnn", help="Model name")
@@ -30,6 +35,7 @@ def main():
 
     assert args.iamtrain is not None
 
+    # Initialize Language Model
     with open("characters.txt", "r") as content_file:
         characters = content_file.read() + " "
         lst = characters
@@ -45,6 +51,7 @@ def main():
 
     lm = LanguageModel(dictionnary, characters, word_characters)
 
+    # Create the model and the loss
     model = resRnn(labels)
     loss = model.create_loss()
 
@@ -74,6 +81,7 @@ def main():
 
     epoch = 0
 
+    # Create or load the weights
     if os.path.exists(checkpoint_name):
         print_normal("Restoring the weights...")
         checkpoint = torch.load(checkpoint_name)
@@ -89,6 +97,7 @@ def main():
         for param_group in optimizer.param_groups:
             param_group['lr'] = args.lr
 
+    # Initialize datasets
     train_databases = [IAMHandwritingLineDatabase(args.iamtrain, height=image_height, loss=loss)]
 
     if args.generated:
@@ -105,6 +114,8 @@ def main():
 
     moving_average = MovingAverage(max(train_database.__len__() // args.bs, 1024))
 
+
+    # Start training
     try:
         while True:
             if args.epochlimit is not None and epoch > args.epochlimit:

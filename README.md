@@ -84,6 +84,66 @@ class MyCustomDataset(Dataset):
 		
 		return torch.from_numpy(image), (self.loss.preprocess_label(text, image.shape[2]), text, image.shape[2])
 ```
+
+## How to use a custom model
+
+1. Create a file ```my_custom_model.py``` in the models directory.
+2. This file must contains a class ```MyCustomModel``` inheriting from ```torch.nn.Module```
+3. The ```forward``` function must return the output of the neural network, the ```get_input_image_height``` must return the input image height, and the ```create_loss``` must return an instance of the loss.
+
+```python
+import torch
+
+from loss.ctc import CTC
+
+
+class MyCustomModel(torch.nn.Module):
+
+    def __init__(self, labels):
+        super().__init__()
+
+        self.labels = labels
+        self.output_numbers =  max(labels.values()) + 1
+
+        self.rnn = torch.nn.LSTM(self.convolutions_output_size[1] * self.convolutions_output_size[2], self.output_numbers, num_layers=2)
+
+        self.softmax = torch.nn.Softmax(dim=2)
+
+    def forward(self, x):
+        batch_size = x.data.size()[0]
+        channel_num = x.data.size()[1]
+        height = x.data.size()[2]
+        width = x.data.size()[3]
+
+        x = x.view(batch_size, channel_num * height, width)
+        x = torch.transpose(x, 1, 2)
+        
+        x, _ = self.rnn(x)
+        
+        if not self.training:
+            x = self.softmax(x)
+
+        return x
+
+    def get_input_image_height(self):
+        return 32
+
+    def create_loss(self):
+        return CTC(self.labels, lambda x: x)
+```
+
+
+## How to use a custom loss
+
+1. Create a file ```my_custom_loss.py``` in the loss directory
+2. This file must contains a class ```MyCustomLoss``` inheriting from ```torch.nn.Module```
+3. Multiple function must be implemented : 
+    1. The ```forward``` function must return the loss
+    2. ```preprocess_label``` is called in the dataset
+    3. ```proces_label``` is called during the training
+    4. ```ytrue_to_lines``` decode the output of the neural network
+    
+See ```loss/ctc.pyx```
 		
 ## Generated document
 
