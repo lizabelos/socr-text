@@ -85,3 +85,9 @@ class MyCustomDataset(Dataset):
 		return torch.from_numpy(image), (self.loss.preprocess_label(text, image.shape[2]), text, image.shape[2])
 ```
 		
+## Generated document
+
+Use the ```--generated``` argument to use Scribbler generated document.
+Scribbler need to be cloned in the submodules folder.
+ 
+[Scribbler](https://github.com/dtidmarsh/scribbler)

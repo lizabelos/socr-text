@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--disablecuda', action='store_const', const=True, default=False)
     parser.add_argument('--iamtrain', type=str)
     parser.add_argument('--iamtest', type=str, default=None)
+    parser.add_argument('--generated', action='store_const', const=True, default=False)
     args = parser.parse_args()
 
     assert args.iamtrain is not None
@@ -88,7 +89,16 @@ def main():
         for param_group in optimizer.param_groups:
             param_group['lr'] = args.lr
 
-    train_database = IAMHandwritingLineDatabase(args.iamtrain, height=image_height, loss=loss)
+    train_databases = [IAMHandwritingLineDatabase(args.iamtrain, height=image_height, loss=loss)]
+
+    if args.generated:
+        sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "submodules/scribbler"))
+        from scribbler.generator import LineGenerator
+        train_databases.append(LineGenerator(height=image_height, loss=loss))
+
+    train_database = torch.utils.data.ConcatDataset(train_databases)
+
+
     test_database = None
     if args.iamtest is not None:
         test_database = IAMHandwritingLineDatabase(args.iamtest, height=image_height, loss=loss)
