@@ -24,6 +24,33 @@ python3 train.py --iamtrain [train_path]
 
 If you want to enable test during the training, use the commande line argument ```--iamtest```.
 
+Use the ```--help``` argument for more arguments, like the batch size or the learning rate.
+
+```
+usage: train.py [-h] [--bs BS] [--model MODEL] [--name NAME] [--lr LR]
+                [--clipgradient CLIPGRADIENT] [--epochlimit EPOCHLIMIT]
+                [--overlr] [--disablecuda] [--iamtrain IAMTRAIN]
+                [--iamtest IAMTEST] [--generated]
+
+SOCR Text Recognizer
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --bs BS               Batch size
+  --model MODEL         Model name
+  --name NAME           Name for this training
+  --lr LR               Learning rate
+  --clipgradient CLIPGRADIENT
+                        Gradient clipping
+  --epochlimit EPOCHLIMIT
+                        Limit the training to a number of epoch
+  --overlr              Override the learning rate
+  --disablecuda         Disable cuda
+  --iamtrain IAMTRAIN   IAM Training Set
+  --iamtest IAMTEST     IAM Testing Set
+  --generated           Enable generated data
+```
+
 ## Evaluate
 
 To evaluate the network, where path is a directory or a image file, run : 
@@ -150,4 +177,4 @@ See ```loss/ctc.pyx```
 Use the ```--generated``` argument to use Scribbler generated document.
 Scribbler need to be cloned in the submodules folder.
  
-[Scribbler](https://github.com/dtidmarsh/scribbler)
+[Scribbler](https://github.com/belosthomas/scribbler)

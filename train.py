@@ -20,17 +20,17 @@ def main():
 
     # Parse the command line arguments
     parser = argparse.ArgumentParser(description="SOCR Text Recognizer")
-    parser.add_argument('--bs', type=int, default=1)
+    parser.add_argument('--bs', type=int, default=1, help="Batch size")
     parser.add_argument('--model', type=str, default="resRnn", help="Model name")
-    parser.add_argument('--name', type=str, default="resRnn")
+    parser.add_argument('--name', type=str, default="resRnn", help="Name for this training")
     parser.add_argument('--lr', type=float, default=0.0001, help="Learning rate")
-    parser.add_argument('--clipgradient', type=float, default=None)
-    parser.add_argument('--epochlimit', type=int, default=None)
-    parser.add_argument('--overlr', action='store_const', const=True, default=False)
-    parser.add_argument('--disablecuda', action='store_const', const=True, default=False)
-    parser.add_argument('--iamtrain', type=str)
-    parser.add_argument('--iamtest', type=str, default=None)
-    parser.add_argument('--generated', action='store_const', const=True, default=False)
+    parser.add_argument('--clipgradient', type=float, default=None, help="Gradient clipping")
+    parser.add_argument('--epochlimit', type=int, default=None, help="Limit the training to a number of epoch")
+    parser.add_argument('--overlr', action='store_const', const=True, default=False, help="Override the learning rate")
+    parser.add_argument('--disablecuda', action='store_const', const=True, default=False, help="Disable cuda")
+    parser.add_argument('--iamtrain', type=str, help="IAM Training Set")
+    parser.add_argument('--iamtest', type=str, default=None, help="IAM Testing Set")
+    parser.add_argument('--generated', action='store_const', const=True, default=False, help="Enable generated data")
     args = parser.parse_args()
 
     assert args.iamtrain is not None
